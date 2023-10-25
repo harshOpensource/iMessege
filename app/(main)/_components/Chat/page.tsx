@@ -1,15 +1,12 @@
-
-import React from 'react'
-import { Session } from 'next-auth'
+import React from "react";
+import { Session } from "next-auth";
 
 type Props = {
-    session: Session
+  session: Session;
+};
+
+function Chat({ session }: Props) {
+  return <div>Chat</div>;
 }
 
-function Chat({session}: Props) {
-  return (
-    <div>Chat</div>
-  )
-}
-
-export default Chat
+export default Chat;
