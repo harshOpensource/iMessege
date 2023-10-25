@@ -6,6 +6,7 @@ import AuthProvider from './_context/AuthProvider'
 import './globals.css'
 import { Toaster } from 'react-hot-toast';
 
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -21,11 +22,17 @@ export const metadata: Metadata = {
   }
 }
 
+
+
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+
+
+  
   
   return (
     <html lang="en">
@@ -40,3 +47,4 @@ export default function RootLayout({
     </html>
   )
 }
+

@@ -1,15 +1,35 @@
 "use client"
 
-import { Box, Button } from '@chakra-ui/react'
-import Image from 'next/image'
-import { signIn } from 'next-auth/react'
+import { Box } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
+import Auth from './_components/Auth/page';
+import Chat from './_components/Chat/page';
 
 export default function Home() {
+
+  const {data:session} = useSession();
+
+
+  const reloadSession = () => {
+    const event = new Event("visibilitychange");
+    document.dispatchEvent(event);
+  }
+  
+
   return (
     <main>
       <Box>
-         <Button onClick={() => signIn()}>Sign In</Button>vfvf
+         {session && session.user?.username ? (
+          <Chat session={session} />
+         ) : (
+          <Auth session={session} reloadSession={reloadSession} />
+         )}
       </Box>
     </main>
   )
 }
+
+
+
+
+
