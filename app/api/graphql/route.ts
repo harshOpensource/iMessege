@@ -4,22 +4,24 @@ import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { PrismaClient } from "@prisma/client";
 import { PubSub } from "graphql-subscriptions";
-import { useServer as subServer } from "graphql-ws/lib/use/ws";
+import { useServer as subServer, useServer } from "graphql-ws/lib/use/ws";
 import { createServer } from "http";
-import { NextApiRequest, NextApiResponse } from "next";
-import { Session, getServerSession } from "next-auth";
+import { NextApiRequest, NextApiResponse, NextPageContext } from "next";
 import { WebSocketServer } from "ws";
 import resolvers from "@/graphql-server/resolvers/index";
 import typeDefs from "@/graphql-server/typeDefs/index";
+
 import { authOptions } from "../auth/[...nextauth]/route";
 import { NextRequest } from "next/server";
-
-const httpServer = createServer();
+import gql from "graphql-tag";
+import { Session, getServerSession } from "next-auth";
 
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
 });
+
+const httpServer = createServer();
 
 const wsServer = new WebSocketServer({
   server: httpServer,
@@ -41,10 +43,10 @@ const getSubscriptionContext = async (
     return { session, prisma, pubsub };
   }
   // Otherwise let our resolvers know we don't have a current user
-  return { session: null, prisma, pubsub };
+  return { session: session, prisma, pubsub };
 };
 
-const serverCleanup = subServer(
+const serverCleanup = useServer(
   {
     schema,
     context: (
@@ -63,7 +65,6 @@ const serverCleanup = subServer(
 
 const apolloServer = new ApolloServer({
   schema,
-  introspection: true,
   plugins: [
     {
       async serverWillStart() {
@@ -77,20 +78,14 @@ const apolloServer = new ApolloServer({
   ],
 });
 
-const handler = startServerAndCreateNextHandler(apolloServer as any, {
-  context: async (
-    req: NextApiRequest,
-    res: NextApiResponse
-  ): Promise<GraphQLContext> => {
-    const session = await getServerSession(req, res, authOptions);
-    const prisma = new PrismaClient();
-    const pubsub = new PubSub();
+const getServersSession = async (req: NextApiRequest, res: NextApiResponse) => {
+  const session = await getServerSession(req, res, authOptions);
+  return session;
+};
 
-    return { session: session as Session, prisma, pubsub };
-  },
-});
+const handler = startServerAndCreateNextHandler<NextRequest>(apolloServer);
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, response: NextApiResponse) {
   return handler(request);
 }
 

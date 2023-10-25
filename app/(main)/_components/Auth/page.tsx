@@ -1,5 +1,9 @@
-import React, { useState } from "react";
-import { Session } from "next-auth";
+import UserOperations from "@/graphql-client/operations/users";
+import {
+  CreateUsernameData,
+  CreateUsernameVariables,
+} from "@/graphql-client/types";
+import { useMutation } from "@apollo/client";
 import {
   Button,
   Center,
@@ -9,7 +13,10 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { Session } from "next-auth";
 import { signIn } from "next-auth/react";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 type Props = {
   session: Session | null;
@@ -20,7 +27,39 @@ type Props = {
 function Auth({ session, reloadSession, status }: Props) {
   const [username, setUsername] = useState<string>("");
 
-  const onSubmit = async () => {};
+  const [createUsername, { data, loading, error }] = useMutation<
+    CreateUsernameData,
+    CreateUsernameVariables
+  >(UserOperations.Mutation.createUsername);
+
+  const onSubmit = async () => {
+    if (!username) return;
+
+    try {
+      const { data } = await createUsername({
+        variables: {
+          username,
+        },
+      });
+
+      if (!data?.createUsername) {
+        throw new Error();
+      }
+
+      if (data.createUsername.error) {
+        const {
+          createUsername: { error },
+        } = data;
+        toast.error(error);
+        return;
+      }
+
+      toast.success("Username created! 🚀");
+      reloadSession();
+    } catch (error) {
+      toast.error("Something went wrong!");
+    }
+  };
 
   return (
     <Center height="100vh">
@@ -37,7 +76,7 @@ function Auth({ session, reloadSession, status }: Props) {
               }
             />
 
-            <Button width="100%" /* isLoading={``} */ onClick={onSubmit}>
+            <Button width="100%" isLoading={loading} onClick={onSubmit}>
               Create
             </Button>
           </>
@@ -45,10 +84,14 @@ function Auth({ session, reloadSession, status }: Props) {
           <>
             <Image height={100} src="/imessage-logo.png" />
             <Text fontSize="4xl">MessengerQL</Text>
-            <Text width="70%" align="center">
-              Sign in with Google to send unlimited free messages to your
-              friends
-            </Text>
+            {status !== "loading" && (
+              <>
+                <Text width="70%" align="center">
+                  Sign in with Google to send unlimited free messages to your
+                  friends
+                </Text>
+              </>
+            )}
             {status === "loading" ? (
               <>
                 <Spinner margin={4} />
