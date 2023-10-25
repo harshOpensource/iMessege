@@ -7,9 +7,6 @@ export const { getClient } = registerApolloClient(() => {
     link: new HttpLink({
       uri: "http://localhost:3000/api/graphql",
       credentials: "include",
-      headers: {
-        origin: "http://localhost:3000",
-      },
     }),
   });
 });

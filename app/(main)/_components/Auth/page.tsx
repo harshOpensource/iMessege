@@ -66,7 +66,12 @@ function Auth({ session, reloadSession, status }: Props) {
       <Stack align="center" spacing={8}>
         {session ? (
           <>
-            <Image src="/imessage-logo.png" height={100} width={100} />
+            <Image
+              src="/imessage-logo.png"
+              align="center"
+              height={100}
+              width={100}
+            />
             <Text fontSize="3xl">Create your username</Text>
             <Input
               placeholder="Enter a Username"
@@ -85,21 +90,23 @@ function Auth({ session, reloadSession, status }: Props) {
             <Image height={100} src="/imessage-logo.png" />
             <Text fontSize="4xl">MessengerQL</Text>
             {status !== "loading" && (
-              <>
-                <Text width="70%" align="center">
+              <div>
+                <Text width="70%" mx="auto" align="center">
                   Sign in with Google to send unlimited free messages to your
                   friends
                 </Text>
-              </>
+              </div>
             )}
             {status === "loading" ? (
-              <>
+              <div>
                 <Spinner margin={4} />
-              </>
+              </div>
             ) : (
               <Button
                 onClick={() => signIn("google")}
-                leftIcon={<Image height="20px" src="/googlelogo.png" />}
+                leftIcon={
+                  <Image height="20px" src="/googlelogo.png" alt="google" />
+                }
               >
                 Continue with Google
               </Button>

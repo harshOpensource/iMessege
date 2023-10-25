@@ -4,7 +4,6 @@ import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import AuthProvider from "./_context/AuthProvider";
 import "./globals.css";
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { ApolloWrapper } from "@/graphql-client/ApolloProvider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -27,11 +26,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const client = new ApolloClient({
-    uri: "http://localhost:3000/api/graphql",
-    cache: new InMemoryCache(),
-  });
-
   return (
     <html lang="en" suppressHydrationWarning suppressContentEditableWarning>
       <body className={inter.className}>

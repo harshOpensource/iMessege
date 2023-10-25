@@ -1,10 +1,8 @@
 import { PrismaClient, User } from "@prisma/client";
 import { CreateUsernameResponse, GraphQLContext } from "../types";
 import { PubSub } from "graphql-subscriptions";
-import { NextApiRequest, NextApiResponse } from "next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
-import { useSession } from "next-auth/react";
 
 const prisma = new PrismaClient();
 const pubsub = new PubSub();
