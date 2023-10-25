@@ -5,6 +5,19 @@ import { useSession } from "next-auth/react";
 import Auth from "./_components/Auth/page";
 import Chat from "./_components/Chat/page";
 
+import "next-auth";
+
+declare module "next-auth" {
+  interface Session {
+    user: User;
+  }
+
+  interface User {
+    id: string;
+    username: string;
+  }
+}
+
 export default function Home() {
   const { data: session, status } = useSession();
 
